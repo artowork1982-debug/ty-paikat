@@ -367,6 +367,8 @@ function map_render_question_row( $index, $data = array() ) {
     $type     = isset( $data['type'] ) ? $data['type'] : 'text';
     $options  = isset( $data['options'] ) ? $data['options'] : '';
     $required = isset( $data['required'] ) ? $data['required'] : false;
+    $unsuitable_value    = isset( $data['unsuitable_value'] ) ? $data['unsuitable_value'] : '';
+    $unsuitable_feedback = isset( $data['unsuitable_feedback'] ) ? $data['unsuitable_feedback'] : '';
 
     $show_options = ( $type === 'select' );
     ?>
@@ -402,6 +404,21 @@ function map_render_question_row( $index, $data = array() ) {
                 <input type="checkbox" name="map_info_questions[<?php echo esc_attr( $index ); ?>][required]" value="1" <?php checked( $required, true ); ?> />
                 Pakollinen
             </label>
+        </p>
+
+        <hr style="margin:15px 0; border-top:1px dashed #ccc;" />
+        <p>
+            <label><strong>Epäsopivuuspalaute (valinnainen)</strong></label><br>
+            <small style="color:#666;">Jos vastaaja valitsee "epäsopivan" arvon, näytetään kohtelias palaute.</small>
+        </p>
+        <p>
+            <label>Epäsopiva arvo</label><br>
+            <input type="text" name="map_info_questions[<?php echo esc_attr( $index ); ?>][unsuitable_value]" value="<?php echo esc_attr( $unsuitable_value ); ?>" style="width:100%;" placeholder="Esim: no, 1, 2 (pilkulla erotettuna)" />
+            <small style="color:#999;">Yes/No: <code>no</code> | Scale: <code>1,2</code> | Select: vaihtoehdon teksti</small>
+        </p>
+        <p>
+            <label>Palauteviesti</label><br>
+            <textarea name="map_info_questions[<?php echo esc_attr( $index ); ?>][unsuitable_feedback]" rows="2" style="width:100%;" placeholder="Esim: Tämä tehtävä saattaa vaatia tätä ominaisuutta. Voit silti jatkaa hakemista!"><?php echo esc_textarea( $unsuitable_feedback ); ?></textarea>
         </p>
     </div>
     <?php
@@ -509,6 +526,8 @@ function map_save_infopackage_meta( $post_id ) {
                 'type'     => isset( $q['type'] ) ? sanitize_text_field( $q['type'] ) : 'text',
                 'options'  => isset( $q['options'] ) ? sanitize_textarea_field( $q['options'] ) : '',
                 'required' => isset( $q['required'] ) && $q['required'] === '1',
+                'unsuitable_value'     => isset( $q['unsuitable_value'] ) ? sanitize_text_field( $q['unsuitable_value'] ) : '',
+                'unsuitable_feedback'  => isset( $q['unsuitable_feedback'] ) ? sanitize_textarea_field( $q['unsuitable_feedback'] ) : '',
             );
         }
         update_post_meta( $post_id, '_map_info_questions', $questions );

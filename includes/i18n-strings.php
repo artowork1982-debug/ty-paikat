@@ -47,6 +47,35 @@ function map_i18n_strings() {
             'sv' => 'ℹ️ Mer info',
         ),
         
+        // Tab names
+        'tab.general' => array(
+            'fi' => 'Yleistä',
+            'en' => 'General',
+            'sv' => 'Allmänt',
+        ),
+        'tab.videos' => array(
+            'fi' => 'Videot',
+            'en' => 'Videos',
+            'sv' => 'Videor',
+        ),
+        'tab.questions' => array(
+            'fi' => 'Kysymykset',
+            'en' => 'Questions',
+            'sv' => 'Frågor',
+        ),
+        
+        // Question feedback
+        'feedback.unsuitable_default' => array(
+            'fi' => 'Tämä tehtävä ei välttämättä vastaa kaikkia toiveitasi, mutta voit silti jatkaa hakemista — kaikki hakemukset käsitellään!',
+            'en' => 'This position may not match all your preferences, but you are still welcome to apply — all applications will be reviewed!',
+            'sv' => 'Denna tjänst kanske inte matchar alla dina önskemål, men du är välkommen att söka — alla ansökningar behandlas!',
+        ),
+        'feedback.heading' => array(
+            'fi' => 'Huomio',
+            'en' => 'Please note',
+            'sv' => 'Observera',
+        ),
+        
         // Question types
         'question.yes' => array(
             'fi' => 'Kyllä',

@@ -200,7 +200,7 @@
             html += '<div class="map-modal__tabs">';
             html += `<button type="button" class="map-tab-btn is-active" data-tab="general">${i18n['tab.general'] || 'Yleistä'}</button>`;
             if (hasMedia) {
-                html += `<button type="button" class="map-tab-btn" data-tab="media">${i18n['tab.media'] || 'Media'}</button>`;
+                html += `<button type="button" class="map-tab-btn" data-tab="media">${i18n['tab.videos'] || 'Videot'}</button>`;
             }
             if (hasQuestions) {
                 html += `<button type="button" class="map-tab-btn" data-tab="questions">${i18n['tab.questions'] || 'Kysymykset'}</button>`;
@@ -344,11 +344,31 @@
         const pillButtons = content.querySelectorAll('.map-pill-button');
         pillButtons.forEach(btn => {
             btn.addEventListener('click', function() {
-                // Poista is-selected kaikista saman kysymyksen napeista
                 const siblings = this.parentElement.querySelectorAll('.map-pill-button');
                 siblings.forEach(s => s.classList.remove('is-selected'));
-                // Lisää is-selected tähän
                 this.classList.add('is-selected');
+                
+                // Tarkista palaute
+                const questionDiv = this.closest('.map-question');
+                checkUnsuitableFeedback(questionDiv, this.getAttribute('data-value'));
+            });
+        });
+
+        // Scale radio buttons
+        const scaleInputs = content.querySelectorAll('.map-question__scale input[type="radio"]');
+        scaleInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const questionDiv = this.closest('.map-question');
+                checkUnsuitableFeedback(questionDiv, this.value);
+            });
+        });
+
+        // Select dropdown
+        const selectInputs = content.querySelectorAll('.map-question__select');
+        selectInputs.forEach(select => {
+            select.addEventListener('change', function() {
+                const questionDiv = this.closest('.map-question');
+                checkUnsuitableFeedback(questionDiv, this.value);
             });
         });
     }
@@ -547,8 +567,52 @@
                 html += `<input type="text" class="map-question__input" ${question.required ? 'required' : ''}>`;
         }
 
+        // Palaute-banneri placeholder (piilotettu oletuksena)
+        if (question.unsuitable_value && question.unsuitable_feedback) {
+            html += `<div class="map-question__feedback" style="display:none;" data-unsuitable-values="${escapeHtml(question.unsuitable_value)}">
+                <div class="map-feedback-banner">
+                    <span class="map-feedback-icon">💡</span>
+                    <div class="map-feedback-text">
+                        <strong>${i18n['feedback.heading'] || 'Huomio'}</strong>
+                        <p>${escapeHtml(question.unsuitable_feedback)}</p>
+                    </div>
+                </div>
+            </div>`;
+        } else if (question.unsuitable_value) {
+            // Käytä oletuspalautetta
+            html += `<div class="map-question__feedback" style="display:none;" data-unsuitable-values="${escapeHtml(question.unsuitable_value)}">
+                <div class="map-feedback-banner">
+                    <span class="map-feedback-icon">💡</span>
+                    <div class="map-feedback-text">
+                        <strong>${i18n['feedback.heading'] || 'Huomio'}</strong>
+                        <p>${i18n['feedback.unsuitable_default'] || 'Tämä tehtävä ei välttämättä vastaa kaikkia toiveitasi, mutta voit silti jatkaa hakemista!'}</p>
+                    </div>
+                </div>
+            </div>`;
+        }
+
         html += '</div>';
         return html;
+    }
+
+    /**
+     * Tarkista epäsopiva palaute ja näytä banneri tarvittaessa
+     */
+    function checkUnsuitableFeedback(questionDiv, selectedValue) {
+        if (!questionDiv) return;
+        const feedbackDiv = questionDiv.querySelector('.map-question__feedback');
+        if (!feedbackDiv) return;
+        
+        const unsuitableValues = feedbackDiv.getAttribute('data-unsuitable-values')
+            .split(',')
+            .map(v => v.trim().toLowerCase());
+        
+        if (unsuitableValues.includes(selectedValue.toLowerCase())) {
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.style.animation = 'fadeIn 0.3s ease';
+        } else {
+            feedbackDiv.style.display = 'none';
+        }
     }
 
     /**
