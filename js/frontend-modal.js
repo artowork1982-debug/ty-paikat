@@ -610,7 +610,9 @@
             .split(',')
             .map(v => v.trim().toLowerCase());
         
-        if (unsuitableValues.includes(selectedValue.toLowerCase())) {
+        const selectedValueLower = String(selectedValue || '').toLowerCase();
+        
+        if (unsuitableValues.includes(selectedValueLower)) {
             feedbackDiv.style.display = 'block';
         } else {
             feedbackDiv.style.display = 'none';
