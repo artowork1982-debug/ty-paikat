@@ -126,6 +126,15 @@ function map_rest_get_job_info( $request ) {
                 $available_languages_map[ $check_lang ] = (bool) ( $translated_id && get_post_status( $translated_id ) === 'publish' );
             }
 
+            // Normalisoi kysymykset – varmista, että unsuitable-kentät ovat aina mukana
+            if ( is_array( $questions ) ) {
+                $questions = array_map( function( $q ) {
+                    $q['unsuitable_value']    = $q['unsuitable_value'] ?? '';
+                    $q['unsuitable_feedback'] = $q['unsuitable_feedback'] ?? '';
+                    return $q;
+                }, $questions );
+            }
+
             $package_data = array(
                 'id'                  => $package_id,
                 'title'               => $package_post->post_title,

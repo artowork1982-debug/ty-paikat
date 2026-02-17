@@ -731,7 +731,7 @@
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     border: 1px solid #f59e0b;
     border-radius: 12px;
-    animation: fadeIn 0.3s ease;
+    animation: mapFeedbackFadeIn 0.3s ease-out;
 }
 
 .map-feedback-icon {
@@ -758,7 +758,13 @@
     margin: 0;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes mapFeedbackFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
