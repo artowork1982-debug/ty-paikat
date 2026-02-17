@@ -233,7 +233,7 @@ function map_sync_feed() {
 
             $new_title   = wp_strip_all_tags($title);
             $new_excerpt = wp_strip_all_tags($desc_final);
-            $new_content = !empty($laura_description) ? $laura_description : ''; // Already wp_kses_post sanitized
+            $new_content = $laura_description ? $laura_description : ''; // Ensure string, not null
 
             // Päivitä vain jos on tarvetta
             if ($old_title !== $new_title || $old_excerpt !== $new_excerpt || $old_content !== $new_content) {
@@ -287,7 +287,7 @@ function map_sync_feed() {
                 'post_status'  => 'publish',
                 'post_title'   => wp_strip_all_tags($title),
                 'post_excerpt' => wp_strip_all_tags($desc_final),
-                'post_content' => !empty($laura_description) ? $laura_description : '', // Already wp_kses_post sanitized
+                'post_content' => $laura_description ? $laura_description : '', // Ensure string, not null
             ));
             if (!is_wp_error($new_post_id)) {
                 update_post_meta($new_post_id, 'original_rss_link', $link);
