@@ -1,0 +1,28 @@
+.my-job-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.my-job-list li {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+/* Huomaa: Värejä ei välttämättä tarvita, jos ne tullaan inline-tyylistä. */
+.my-job-list a {
+    text-decoration: none; 
+    font-weight: bold; 
+    font-size: 18px;
+}
+
+.my-job-list a:hover {
+    text-decoration: none;
+}
+
+.my-job-list .description {
+    font-size: 0.8rem; 
+    font-weight: 300; 
+    margin-top: 5px;
+}
