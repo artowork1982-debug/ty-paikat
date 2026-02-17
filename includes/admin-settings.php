@@ -175,7 +175,7 @@ function map_render_settings_page() {
                 </div>
                 <div class="map-card__body">
                     <div class="map-field">
-                        <label class="map-field__label" for="items_count">Näytettävien työpaikkojen määrä</label>
+                        <label class="map-field__label" for="items_count">Näytettävien jobien määrä</label>
                         <input type="number" id="items_count" name="items_count" value="<?php echo esc_attr($opts['items_count']); ?>" min="1" class="map-field__input">
                     </div>
                     <div class="map-field">
