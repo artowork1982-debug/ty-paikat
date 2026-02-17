@@ -420,6 +420,13 @@ function map_render_question_row( $index, $data = array() ) {
             <label>Palauteviesti</label><br>
             <textarea name="map_info_questions[<?php echo esc_attr( $index ); ?>][unsuitable_feedback]" rows="2" style="width:100%;" placeholder="Esim: Tämä tehtävä saattaa vaatia tätä ominaisuutta. Voit silti jatkaa hakemista!"><?php echo esc_textarea( $unsuitable_feedback ); ?></textarea>
         </p>
+        <?php if ( ! empty( $unsuitable_value ) ) : ?>
+        <p style="margin-top:5px;">
+            <span style="background:#fef3c7; border:1px solid #f59e0b; border-radius:4px; padding:2px 8px; font-size:11px; color:#92400e;">
+                💡 Palaute aktivoituu arvo(i)lla: <code><?php echo esc_html( $unsuitable_value ); ?></code>
+            </span>
+        </p>
+        <?php endif; ?>
     </div>
     <?php
 }

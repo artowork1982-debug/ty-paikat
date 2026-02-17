@@ -576,19 +576,23 @@
         }
 
         // Palaute-banneri placeholder (piilotettu oletuksena)
-        if (question.unsuitable_value && question.unsuitable_feedback) {
-            html += `<div class="map-question__feedback" style="display:none;" data-unsuitable-values="${escapeHtml(question.unsuitable_value)}">
+        // Null-suojaukset varmistavat yhteensopivuuden vanhan datan kanssa
+        const unsuitableValue = question.unsuitable_value || '';
+        const unsuitableFeedback = question.unsuitable_feedback || '';
+        
+        if (unsuitableValue && unsuitableFeedback) {
+            html += `<div class="map-question__feedback" style="display:none;" data-unsuitable-values="${escapeHtml(unsuitableValue)}">
                 <div class="map-feedback-banner">
                     <span class="map-feedback-icon">💡</span>
                     <div class="map-feedback-text">
                         <strong>${i18n['feedback.heading'] || 'Huomio'}</strong>
-                        <p>${escapeHtml(question.unsuitable_feedback)}</p>
+                        <p>${escapeHtml(unsuitableFeedback)}</p>
                     </div>
                 </div>
             </div>`;
-        } else if (question.unsuitable_value) {
+        } else if (unsuitableValue) {
             // Käytä oletuspalautetta
-            html += `<div class="map-question__feedback" style="display:none;" data-unsuitable-values="${escapeHtml(question.unsuitable_value)}">
+            html += `<div class="map-question__feedback" style="display:none;" data-unsuitable-values="${escapeHtml(unsuitableValue)}">
                 <div class="map-feedback-banner">
                     <span class="map-feedback-icon">💡</span>
                     <div class="map-feedback-text">
