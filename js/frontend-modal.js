@@ -603,13 +603,15 @@
         const feedbackDiv = questionDiv.querySelector('.map-question__feedback');
         if (!feedbackDiv) return;
         
-        const unsuitableValues = feedbackDiv.getAttribute('data-unsuitable-values')
+        const unsuitableValuesAttr = feedbackDiv.getAttribute('data-unsuitable-values');
+        if (!unsuitableValuesAttr) return;
+        
+        const unsuitableValues = unsuitableValuesAttr
             .split(',')
             .map(v => v.trim().toLowerCase());
         
         if (unsuitableValues.includes(selectedValue.toLowerCase())) {
             feedbackDiv.style.display = 'block';
-            feedbackDiv.style.animation = 'fadeIn 0.3s ease';
         } else {
             feedbackDiv.style.display = 'none';
         }
