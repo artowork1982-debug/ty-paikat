@@ -4,32 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Hae oletuskieli
- * 
- * @return string Oletuskielikoodi
- */
-function map_get_default_lang() {
-    // Polylang
-    if ( function_exists( 'pll_default_language' ) ) {
-        $lang = pll_default_language();
-        if ( $lang ) {
-            return map_normalize_lang_code( $lang );
-        }
-    }
-    
-    // WPML
-    if ( function_exists( 'icl_get_default_language' ) ) {
-        $lang = icl_get_default_language();
-        if ( $lang ) {
-            return map_normalize_lang_code( $lang );
-        }
-    }
-    
-    // Fallback
-    return 'fi';
-}
-
-/**
  * Hae infopaketin oikea kieliversio
  * 
  * @param int $pkg_id Infopaketin ID

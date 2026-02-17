@@ -130,11 +130,17 @@
                 content.innerHTML = `
                     <div class="map-modal__error">
                         <p>${i18n['modal.load_error'] || 'Tietojen lataaminen epäonnistui.'}</p>
-                        <button type="button" class="map-modal__retry" onclick="location.reload()">
+                        <button type="button" class="map-modal__retry">
                             ${i18n['modal.close'] || 'Sulje'}
                         </button>
                     </div>
                 `;
+                
+                // Lisää event listener retry-napille
+                const retryBtn = content.querySelector('.map-modal__retry');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', closeModal);
+                }
             });
     }
 
@@ -149,7 +155,7 @@
 
         // Top bar: sulkemisnappi ja kielivalitsin
         html += '<div class="map-modal__topbar">';
-        html += `<button type="button" class="map-modal__close" onclick="this.closest('.map-modal-overlay').dispatchEvent(new CustomEvent('closeModal'))">&times;</button>`;
+        html += '<button type="button" class="map-modal__close">&times;</button>';
         
         // Kielivalitsin (jos useita kieliä saatavilla)
         if (data.infopackage && data.infopackage.available_languages) {
@@ -233,6 +239,12 @@
 
         content.innerHTML = html;
 
+        // Lisää event listenerit sulkemisnappiin
+        const closeBtn = content.querySelector('.map-modal__close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
         // Lisää event listenerit kielivalitsimelle
         const langButtons = content.querySelectorAll('.map-lang-btn');
         langButtons.forEach(btn => {
@@ -243,9 +255,6 @@
                 }
             });
         });
-
-        // Lisää close-event listener
-        modalElement.addEventListener('closeModal', closeModal);
     }
 
     /**
@@ -331,8 +340,5 @@
     } else {
         init();
     }
-
-    // Globaali funktio modalin sulkemiseen (käytetään close-napissa)
-    window.mapCloseModal = closeModal;
 
 })();

@@ -129,6 +129,17 @@ function map_jobs_list_shortcode($atts) {
  * Lataa modal-tyylit ja skriptit
  */
 function map_enqueue_modal_assets() {
+    // Varmista että perus-CSS on enqueued
+    $base_css_path = plugin_dir_path( dirname( __FILE__ ) ) . 'css/minun-aggregator-plugin.css';
+    if ( file_exists( $base_css_path ) && ! wp_style_is( 'my-aggregator-css', 'enqueued' ) ) {
+        wp_enqueue_style(
+            'my-aggregator-css',
+            plugins_url( 'css/minun-aggregator-plugin.css', dirname( __FILE__ ) ),
+            array(),
+            filemtime( $base_css_path )
+        );
+    }
+
     // Lataa modal CSS
     $modal_css_path = plugin_dir_path( dirname( __FILE__ ) ) . 'css/modal-infopackage.css';
     if ( file_exists( $modal_css_path ) ) {
