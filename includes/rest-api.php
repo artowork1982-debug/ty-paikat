@@ -129,8 +129,8 @@ function map_rest_get_job_info( $request ) {
             // Normalisoi kysymykset – varmista, että unsuitable-kentät ovat aina mukana
             if ( is_array( $questions ) ) {
                 $questions = array_map( function( $q ) {
-                    $q['unsuitable_value']    = isset( $q['unsuitable_value'] ) ? $q['unsuitable_value'] : '';
-                    $q['unsuitable_feedback'] = isset( $q['unsuitable_feedback'] ) ? $q['unsuitable_feedback'] : '';
+                    $q['unsuitable_value']    = $q['unsuitable_value'] ?? '';
+                    $q['unsuitable_feedback'] = $q['unsuitable_feedback'] ?? '';
                     return $q;
                 }, $questions );
             }
