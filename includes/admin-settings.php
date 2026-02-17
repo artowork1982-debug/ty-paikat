@@ -39,6 +39,7 @@ function my_agg_get_settings() {
         'link_color'             => '#000000',
         'description_text_color' => '#666666',
         'link_hover_color'       => '#ff0000',
+        'default_infopackage'    => 0,
     );
     return wp_parse_args(get_option('my_agg_settings', array()), $defaults);
 }
@@ -84,6 +85,7 @@ function map_render_settings_page() {
             'link_color'             => sanitize_hex_color($_POST['link_color']),
             'description_text_color' => sanitize_hex_color($_POST['description_text_color']),
             'link_hover_color'       => sanitize_hex_color($_POST['link_hover_color']),
+            'default_infopackage'    => isset($_POST['default_infopackage']) ? absint($_POST['default_infopackage']) : 0,
         );
         update_option('my_agg_settings', $new_settings);
         echo '<div class="notice notice-success is-dismissible"><p>Asetukset tallennettu!</p></div>';
@@ -175,6 +177,29 @@ function map_render_settings_page() {
                 <tr>
                     <th><label for="link_hover_color">Hover-väri</label></th>
                     <td><input type="text" id="link_hover_color" name="link_hover_color" value="<?php echo esc_attr($opts['link_hover_color']); ?>" class="color-field"></td>
+                </tr>
+                <tr>
+                    <th><label for="default_infopackage">Oletusinfopaketti</label></th>
+                    <td>
+                        <select id="default_infopackage" name="default_infopackage">
+                            <option value="0"><?php echo esc_html('Ei oletusinfopakettia'); ?></option>
+                            <?php
+                            // Get all published infopackages
+                            $infopackages = get_posts(array(
+                                'post_type'      => 'map_infopackage',
+                                'post_status'    => 'publish',
+                                'posts_per_page' => -1,
+                                'orderby'        => 'title',
+                                'order'          => 'ASC',
+                            ));
+                            foreach ($infopackages as $pkg) {
+                                $selected = selected($opts['default_infopackage'], $pkg->ID, false);
+                                echo '<option value="' . esc_attr($pkg->ID) . '" ' . $selected . '>' . esc_html($pkg->post_title) . '</option>';
+                            }
+                            ?>
+                        </select>
+                        <p class="description">Valitse infopaketti, jota käytetään oletuksena kun mikään automaattisääntö ei osu eikä manuaalista liitosta ole.</p>
+                    </td>
                 </tr>
             </table>
             <p>

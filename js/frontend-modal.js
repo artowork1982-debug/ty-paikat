@@ -210,6 +210,12 @@
 
         // Tab-sisältö: Yleistä
         html += `<div class="map-tab-content" data-tab-content="general">`;
+        
+        // Työn kuvaus (laura:description) - already sanitized with wp_kses_post on server
+        if (data.description) {
+            html += '<div class="map-modal__job-description">' + data.description + '</div>';
+        }
+        
         if (pkg) {
             // Highlights
             if (pkg.highlights && pkg.highlights.length > 0) {
