@@ -1,16 +1,447 @@
-/* Paranna postboxien ulkoasua */
+/* ============================================
+   Admin Panel - Modern Card-based Layout
+   ============================================ */
+
+/* === Admin Wrap === */
+.map-admin-wrap {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+/* === Card Styles === */
+.map-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.map-card:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.map-card__header {
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    background: linear-gradient(to bottom, #fafafa, #fff);
+}
+
+.map-card__icon {
+    font-size: 20px;
+    color: #2271b1;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.map-card__title {
+    display: inline;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+    margin: 0;
+    vertical-align: middle;
+}
+
+.map-card__desc {
+    color: #757575;
+    font-size: 13px;
+    margin: 4px 0 0;
+    line-height: 1.5;
+}
+
+.map-card__body {
+    padding: 20px 24px;
+}
+
+/* === Status Card (Special gradient variant) === */
+.map-card--status .map-card__header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-bottom: none;
+}
+
+.map-card--status .map-card__icon,
+.map-card--status .map-card__title,
+.map-card--status .map-card__desc {
+    color: #fff;
+}
+
+/* === Form Fields === */
+.map-field {
+    margin-bottom: 20px;
+}
+
+.map-field:last-child {
+    margin-bottom: 0;
+}
+
+.map-field__label {
+    display: block;
+    font-weight: 500;
+    font-size: 13px;
+    color: #1d2327;
+    margin-bottom: 6px;
+}
+
+.map-field__input {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background: #fff;
+}
+
+.map-field__input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.15);
+    outline: none;
+}
+
+.map-field__input--wide {
+    width: 100%;
+    max-width: 600px;
+}
+
+.map-field__select {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    background: #fff;
+    min-width: 200px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.map-field__select:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.15);
+}
+
+.map-field__textarea {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    min-height: 80px;
+    resize: vertical;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    line-height: 1.5;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.map-field__textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.15);
+    outline: none;
+}
+
+.map-field__help {
+    color: #757575;
+    font-size: 12px;
+    margin: 4px 0 0;
+    line-height: 1.5;
+}
+
+/* === Toggle Switch === */
+.map-toggle {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    user-select: none;
+}
+
+.map-toggle input {
+    display: none;
+}
+
+.map-toggle__slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.map-toggle__slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.map-toggle input:checked + .map-toggle__slider {
+    background: #2271b1;
+}
+
+.map-toggle input:checked + .map-toggle__slider::after {
+    transform: translateX(20px);
+}
+
+.map-toggle__label {
+    font-size: 13px;
+    color: #1d2327;
+    font-weight: 500;
+}
+
+/* === Button Styles === */
+.map-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.map-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.map-btn--primary {
+    background: #2271b1;
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.map-btn--primary:hover {
+    background: #135e96;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.map-btn--secondary {
+    background: #f6f7f7;
+    color: #2c3338;
+    border: 1px solid #c3c4c7;
+}
+
+.map-btn--secondary:hover {
+    background: #e9eaeb;
+    border-color: #8c8f94;
+}
+
+.map-btn--danger {
+    background: #d63638;
+    color: #fff;
+}
+
+.map-btn--danger:hover {
+    background: #b32d2e;
+}
+
+/* === Actions Section === */
+.map-actions {
+    margin: 24px 0;
+    padding: 20px 0;
+}
+
+/* === Sync Stats Grid === */
+.map-sync-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.map-stat {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.map-stat__value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1d2327;
+    line-height: 1.2;
+}
+
+.map-stat__label {
+    font-size: 12px;
+    color: #50575e;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* === Import Log Table === */
+.map-log-table-wrap {
+    overflow-x: auto;
+    margin-top: 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.map-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.map-log-table thead {
+    background: #f6f7f7;
+}
+
+.map-log-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    color: #1d2327;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.map-log-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #2c3338;
+}
+
+.map-log-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.map-log-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.map-log-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Log row states */
+.map-log-table .is-nochange td {
+    opacity: 0.7;
+}
+
+.map-log-table .is-change td {
+    font-weight: 600;
+    background-color: #fff9e6;
+}
+
+/* === Pagination === */
+.map-pagination {
+    margin-top: 16px;
+    text-align: center;
+}
+
+.map-pagination .page-numbers {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 4px;
+    text-decoration: none;
+    background-color: #f6f7f7;
+    color: #2c3338;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid #c3c4c7;
+}
+
+.map-pagination .page-numbers:hover:not(.current) {
+    background-color: #e9eaeb;
+    border-color: #8c8f94;
+}
+
+.map-pagination .page-numbers.current {
+    background-color: #2271b1;
+    color: #fff;
+    border-color: #2271b1;
+}
+
+.map-pagination .page-numbers.dots {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+/* === Responsive Design === */
+@media screen and (max-width: 782px) {
+    .map-card__header {
+        padding: 16px 20px 10px;
+    }
+
+    .map-card__body {
+        padding: 16px 20px;
+    }
+
+    .map-field__input--wide {
+        max-width: 100%;
+    }
+
+    .map-sync-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .map-log-table th,
+    .map-log-table td {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .map-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .map-card__title {
+        font-size: 15px;
+    }
+
+    .map-card__icon {
+        font-size: 18px;
+    }
+}
+
+/* === Color Picker Integration === */
+.map-field__input.color-field {
+    max-width: 100px;
+}
+
+/* === WordPress Admin Compatibility === */
+.wrap.map-admin-wrap h1 {
+    margin-bottom: 20px;
+}
+
+/* === Postbox Enhancement (Legacy compatibility) === */
 .postbox {
     margin-bottom: 20px;
 }
 
-/* Taulukon parannukset */
+/* === Table Enhancement (Legacy compatibility) === */
 .widefat.striped th,
 .widefat.striped td {
     padding: 10px;
     vertical-align: top;
 }
 
-/* Shortcode-esimerkkien korostus */
+/* === Code/Pre Enhancement (Legacy compatibility) === */
 pre {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
@@ -19,19 +450,55 @@ pre {
     overflow: auto;
 }
 
-/* Pagination Styles for Admin */
-.tablenav .tablenav-pages .page-numbers {
-    padding: 6px 10px;
-    margin: 0 2px;
-    text-decoration: none;
-    background-color: #f1f1f1;
-    color: #333;
-    border-radius: 4px;
+/* === Accessibility === */
+.map-btn:focus,
+.map-field__input:focus,
+.map-field__select:focus,
+.map-field__textarea:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
 }
-.tablenav .tablenav-pages .page-numbers.current {
-    background-color: #2271b1;
-    color: #fff;
+
+.map-toggle:focus-within .map-toggle__slider {
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.3);
 }
-.tablenav .tablenav-pages .page-numbers:hover:not(.current) {
-    background-color: #ddd;
+
+/* === Animation === */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.map-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.map-card:nth-child(2) {
+    animation-delay: 0.05s;
+}
+
+.map-card:nth-child(3) {
+    animation-delay: 0.1s;
+}
+
+.map-card:nth-child(4) {
+    animation-delay: 0.15s;
+}
+
+.map-card:nth-child(5) {
+    animation-delay: 0.2s;
+}
+
+.map-card:nth-child(6) {
+    animation-delay: 0.25s;
+}
+
+.map-card:nth-child(7) {
+    animation-delay: 0.3s;
 }
