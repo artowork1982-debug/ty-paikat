@@ -1,6 +1,7 @@
 /**
- * Frontend Modal JavaScript
+ * Frontend Modal JavaScript - Tab-based Redesign
  * Luo slide-over modal työpaikan infopaketin näyttämiseen
+ * Tuki: Tabit, Video, Kuvagalleria, Lightbox, Mobiiliresponsiivisuus
  */
 (function() {
     'use strict';
@@ -8,7 +9,9 @@
     let currentJobId = null;
     let currentLang = null;
     let modalElement = null;
+    let lightboxElement = null;
     let i18n = {};
+    let currentTab = 'general';
 
     /**
      * Alusta modal
@@ -26,10 +29,14 @@
             }
         });
 
-        // ESC-näppäin sulkee modalin
+        // ESC-näppäin sulkee modalin tai lightboxin
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modalElement) {
-                closeModal();
+            if (e.key === 'Escape') {
+                if (lightboxElement && lightboxElement.classList.contains('is-open')) {
+                    closeLightbox();
+                } else if (modalElement) {
+                    closeModal();
+                }
             }
         });
     }
@@ -40,6 +47,7 @@
     function openModal(jobId, lang) {
         currentJobId = jobId;
         currentLang = lang || (window.mapModalConfig ? window.mapModalConfig.lang : 'fi');
+        currentTab = 'general'; // Reset to first tab
 
         // Luo modal DOM jos ei ole vielä
         if (!modalElement) {
@@ -136,7 +144,6 @@
                     </div>
                 `;
                 
-                // Lisää event listener retry-napille
                 const retryBtn = content.querySelector('.map-modal__retry');
                 if (retryBtn) {
                     retryBtn.addEventListener('click', closeModal);
@@ -145,22 +152,27 @@
     }
 
     /**
-     * Renderöi työpaikan tiedot
+     * Renderöi työpaikan tiedot tab-pohjaisena
      */
     function renderJobInfo(data) {
         const content = modalElement.querySelector('.map-modal__content');
         if (!content) return;
 
+        const pkg = data.infopackage;
+        const hasMedia = pkg && ((pkg.video_url && pkg.video_url.trim()) || (pkg.gallery && pkg.gallery.length > 0));
+        const hasQuestions = pkg && pkg.questions && pkg.questions.length > 0;
+        const showTabs = hasMedia || hasQuestions;
+
         let html = '';
 
         // Top bar: sulkemisnappi ja kielivalitsin
         html += '<div class="map-modal__topbar">';
-        html += '<button type="button" class="map-modal__close">&times;</button>';
+        html += '<button type="button" class="map-modal__close" aria-label="Close">&times;</button>';
         
-        // Kielivalitsin (jos useita kieliä saatavilla)
-        if (data.infopackage && data.infopackage.available_languages) {
-            const availableLangs = Object.keys(data.infopackage.available_languages).filter(lang => 
-                data.infopackage.available_languages[lang]
+        // Kielivalitsin
+        if (pkg && pkg.available_languages) {
+            const availableLangs = Object.keys(pkg.available_languages).filter(lang => 
+                pkg.available_languages[lang]
             );
             
             if (availableLangs.length > 1) {
@@ -183,15 +195,22 @@
             html += `<div class="map-modal__excerpt">${escapeHtml(data.excerpt)}</div>`;
         }
 
-        // Infopaketti
-        if (data.infopackage) {
-            const pkg = data.infopackage;
-
-            // Intro
-            if (pkg.intro) {
-                html += `<div class="map-modal__intro">${escapeHtml(pkg.intro)}</div>`;
+        // Tabit (jos tarvitaan)
+        if (showTabs) {
+            html += '<div class="map-modal__tabs">';
+            html += `<button type="button" class="map-tab-btn is-active" data-tab="general">${i18n['tab.general'] || 'Yleistä'}</button>`;
+            if (hasMedia) {
+                html += `<button type="button" class="map-tab-btn" data-tab="media">${i18n['tab.media'] || 'Media'}</button>`;
             }
+            if (hasQuestions) {
+                html += `<button type="button" class="map-tab-btn" data-tab="questions">${i18n['tab.questions'] || 'Kysymykset'}</button>`;
+            }
+            html += '</div>';
+        }
 
+        // Tab-sisältö: Yleistä
+        html += `<div class="map-tab-content" data-tab-content="general">`;
+        if (pkg) {
             // Highlights
             if (pkg.highlights && pkg.highlights.length > 0) {
                 html += '<div class="map-modal__highlights">';
@@ -201,14 +220,9 @@
                 html += '</div>';
             }
 
-            // Kysymykset
-            if (pkg.questions && pkg.questions.length > 0) {
-                html += `<h3 class="map-modal__section-heading">${i18n['modal.questions_heading'] || 'Kysymykset'}</h3>`;
-                html += '<div class="map-modal__questions">';
-                pkg.questions.forEach((q, index) => {
-                    html += renderQuestion(q, index);
-                });
-                html += '</div>';
+            // Intro
+            if (pkg.intro) {
+                html += `<div class="map-modal__intro">${escapeHtml(pkg.intro)}</div>`;
             }
 
             // Yhteyshenkilö
@@ -216,19 +230,59 @@
                 html += `<h3 class="map-modal__section-heading">${i18n['modal.contact_heading'] || 'Yhteyshenkilö'}</h3>`;
                 html += '<div class="map-modal__contact">';
                 if (pkg.contact.name) {
-                    html += `<p><strong>${escapeHtml(pkg.contact.name)}</strong></p>`;
+                    html += `<p><strong>👤 ${escapeHtml(pkg.contact.name)}</strong></p>`;
                 }
                 if (pkg.contact.email) {
-                    html += `<p><a href="mailto:${escapeHtml(pkg.contact.email)}">${escapeHtml(pkg.contact.email)}</a></p>`;
+                    html += `<p>📧 <a href="mailto:${escapeHtml(pkg.contact.email)}">${escapeHtml(pkg.contact.email)}</a></p>`;
                 }
                 if (pkg.contact.phone) {
-                    html += `<p>${escapeHtml(pkg.contact.phone)}</p>`;
+                    html += `<p>📱 ${escapeHtml(pkg.contact.phone)}</p>`;
                 }
                 html += '</div>';
             }
         }
+        html += '</div>';
 
-        // CTA-nappi
+        // Tab-sisältö: Media
+        if (hasMedia) {
+            html += `<div class="map-tab-content" data-tab-content="media" style="display:none;">`;
+            
+            // Video
+            if (pkg.video_url && pkg.video_url.trim()) {
+                const embedUrl = parseVideoUrl(pkg.video_url);
+                if (embedUrl) {
+                    html += '<div class="map-modal__video-wrapper">';
+                    html += `<iframe src="${escapeHtml(embedUrl)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+                    html += '</div>';
+                }
+            }
+
+            // Galleria
+            if (pkg.gallery && pkg.gallery.length > 0) {
+                html += '<div class="map-modal__gallery">';
+                pkg.gallery.forEach((image, index) => {
+                    html += `<div class="map-gallery-item" data-index="${index}">`;
+                    html += `<img src="${escapeHtml(image.thumb)}" alt="" loading="lazy" />`;
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+
+            html += '</div>';
+        }
+
+        // Tab-sisältö: Kysymykset
+        if (hasQuestions) {
+            html += `<div class="map-tab-content" data-tab-content="questions" style="display:none;">`;
+            html += '<div class="map-modal__questions">';
+            pkg.questions.forEach((q, index) => {
+                html += renderQuestion(q, index);
+            });
+            html += '</div>';
+            html += '</div>';
+        }
+
+        // CTA-nappi (sticky)
         if (data.apply_url) {
             html += `<div class="map-modal__cta">
                 <a href="${escapeHtml(data.apply_url)}" target="_blank" rel="noopener" class="map-cta-button">
@@ -239,13 +293,23 @@
 
         content.innerHTML = html;
 
-        // Lisää event listenerit sulkemisnappiin
+        // Event listenerit
+        attachEventListeners(data);
+    }
+
+    /**
+     * Kiinnitä event listenerit modaliin
+     */
+    function attachEventListeners(data) {
+        const content = modalElement.querySelector('.map-modal__content');
+
+        // Sulkemisnappi
         const closeBtn = content.querySelector('.map-modal__close');
         if (closeBtn) {
             closeBtn.addEventListener('click', closeModal);
         }
 
-        // Lisää event listenerit kielivalitsimelle
+        // Kielivalitsimet
         const langButtons = content.querySelectorAll('.map-lang-btn');
         langButtons.forEach(btn => {
             btn.addEventListener('click', function() {
@@ -255,6 +319,173 @@
                 }
             });
         });
+
+        // Tab-napit
+        const tabButtons = content.querySelectorAll('.map-tab-btn');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                switchTab(targetTab);
+            });
+        });
+
+        // Galleria-kuvien klikkaukset (lightbox)
+        const galleryItems = content.querySelectorAll('.map-gallery-item');
+        if (data.infopackage && data.infopackage.gallery) {
+            galleryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'), 10);
+                    openLightbox(data.infopackage.gallery, index);
+                });
+            });
+        }
+
+        // Yes/No pill buttons
+        const pillButtons = content.querySelectorAll('.map-pill-button');
+        pillButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Poista is-selected kaikista saman kysymyksen napeista
+                const siblings = this.parentElement.querySelectorAll('.map-pill-button');
+                siblings.forEach(s => s.classList.remove('is-selected'));
+                // Lisää is-selected tähän
+                this.classList.add('is-selected');
+            });
+        });
+    }
+
+    /**
+     * Vaihda aktiivista tabia
+     */
+    function switchTab(tabName) {
+        currentTab = tabName;
+        
+        const content = modalElement.querySelector('.map-modal__content');
+        
+        // Päivitä tab-napit
+        const tabButtons = content.querySelectorAll('.map-tab-btn');
+        tabButtons.forEach(btn => {
+            if (btn.getAttribute('data-tab') === tabName) {
+                btn.classList.add('is-active');
+            } else {
+                btn.classList.remove('is-active');
+            }
+        });
+
+        // Päivitä tab-sisällöt
+        const tabContents = content.querySelectorAll('.map-tab-content');
+        tabContents.forEach(tc => {
+            if (tc.getAttribute('data-tab-content') === tabName) {
+                tc.style.display = 'block';
+            } else {
+                tc.style.display = 'none';
+            }
+        });
+    }
+
+    /**
+     * Avaa lightbox kuvagallerialle
+     */
+    function openLightbox(gallery, startIndex) {
+        if (!lightboxElement) {
+            createLightboxDOM();
+        }
+
+        const image = lightboxElement.querySelector('.map-lightbox__image');
+        const counter = lightboxElement.querySelector('.map-lightbox__counter');
+        
+        let currentIndex = startIndex;
+
+        function showImage(index) {
+            currentIndex = index;
+            image.src = gallery[index].url;
+            counter.textContent = `${index + 1} / ${gallery.length}`;
+        }
+
+        // Navigointi
+        const prevBtn = lightboxElement.querySelector('.map-lightbox__prev');
+        const nextBtn = lightboxElement.querySelector('.map-lightbox__next');
+
+        prevBtn.onclick = function() {
+            const newIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+            showImage(newIndex);
+        };
+
+        nextBtn.onclick = function() {
+            const newIndex = (currentIndex + 1) % gallery.length;
+            showImage(newIndex);
+        };
+
+        showImage(startIndex);
+        lightboxElement.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Sulje lightbox
+     */
+    function closeLightbox() {
+        if (!lightboxElement) return;
+        lightboxElement.classList.remove('is-open');
+        // Don't restore body overflow here - modal is still open
+    }
+
+    /**
+     * Luo lightbox DOM
+     */
+    function createLightboxDOM() {
+        lightboxElement = document.createElement('div');
+        lightboxElement.className = 'map-lightbox-overlay';
+        lightboxElement.innerHTML = `
+            <button type="button" class="map-lightbox__close" aria-label="Close">&times;</button>
+            <button type="button" class="map-lightbox__prev" aria-label="Previous">‹</button>
+            <button type="button" class="map-lightbox__next" aria-label="Next">›</button>
+            <div class="map-lightbox__content">
+                <img class="map-lightbox__image" src="" alt="" />
+                <div class="map-lightbox__counter">1 / 1</div>
+            </div>
+        `;
+
+        document.body.appendChild(lightboxElement);
+
+        // Sulkemisnappi
+        const closeBtn = lightboxElement.querySelector('.map-lightbox__close');
+        closeBtn.addEventListener('click', closeLightbox);
+
+        // Overlay-klikkaus sulkee
+        lightboxElement.addEventListener('click', function(e) {
+            if (e.target.classList.contains('map-lightbox-overlay')) {
+                closeLightbox();
+            }
+        });
+    }
+
+    /**
+     * Parsii video URL:n embed-muotoon
+     * Validates and converts YouTube/Vimeo URLs to embed format
+     */
+    function parseVideoUrl(url) {
+        if (!url) return null;
+
+        url = url.trim();
+
+        // YouTube - validate and extract video ID
+        let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+        if (match) {
+            return `https://www.youtube.com/embed/${match[1]}`;
+        }
+
+        // Vimeo - validate and extract video ID
+        match = url.match(/vimeo\.com\/(\d+)/);
+        if (match) {
+            return `https://player.vimeo.com/video/${match[1]}`;
+        }
+
+        // Validate if already in embed format
+        if (url.match(/^https:\/\/(www\.youtube\.com\/embed\/[a-zA-Z0-9_-]{11}|player\.vimeo\.com\/video\/\d+)$/)) {
+            return url;
+        }
+
+        return null;
     }
 
     /**

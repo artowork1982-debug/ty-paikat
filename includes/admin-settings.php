@@ -14,6 +14,16 @@ function map_add_admin_menu() {
         'dashicons-rss',
         80
     );
+
+    // Lisää eksplisiittinen submenu Asetukset-linkki
+    add_submenu_page(
+        'my-agg-settings',
+        'Aggregator Settings',
+        'Asetukset',
+        'manage_options',
+        'my-agg-settings',
+        'map_render_settings_page'
+    );
 }
 add_action('admin_menu', 'map_add_admin_menu');
 
@@ -42,6 +52,13 @@ function map_render_settings_page() {
     // --- MUUTOS: luetaan "näytä vain muutokset" -filtteri URL:sta ---
     // 1 = näytä vain lisäykset/poistot/virheet, 0 tai puuttuu = näytä kaikki
     $only_changes = isset($_GET['only_changes']) ? (int) $_GET['only_changes'] : 0;
+
+    // Tyhjennä HTML-välimuisti
+    if (isset($_POST['my_agg_clear_cache'])) {
+        check_admin_referer('my_agg_settings_nonce');
+        update_option('my_agg_cache_bump', time());
+        echo '<div class="notice notice-success is-dismissible"><p>HTML-välimuisti tyhjennetty!</p></div>';
+    }
 
     // Pakota tuonti
     if (isset($_POST['my_agg_force_import'])) {
@@ -163,6 +180,7 @@ function map_render_settings_page() {
             <p>
                 <button type="submit" name="my_agg_save_settings" class="button button-primary">Tallenna</button>
                 <button type="submit" name="my_agg_force_import" class="button button-secondary">Pakota tuonti</button>
+                <button type="submit" name="my_agg_clear_cache" class="button button-secondary">Tyhjennä HTML-välimuisti</button>
             </p>
         </form>
 
