@@ -136,6 +136,13 @@ function map_resolve_infopackage( $job_post_id, $lang = null ) {
         return map_get_translated_package_id( $fallback_id, $lang );
     }
 
+    // Default infopackage fallback
+    $opts = my_agg_get_settings();
+    $default_pkg = isset( $opts['default_infopackage'] ) ? absint( $opts['default_infopackage'] ) : 0;
+    if ( $default_pkg && get_post_status( $default_pkg ) === 'publish' ) {
+        return map_get_translated_package_id( $default_pkg, $lang );
+    }
+
     return null;
 }
 

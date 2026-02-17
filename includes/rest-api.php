@@ -56,7 +56,10 @@ function map_rest_get_job_info( $request ) {
     $current_lang = map_get_current_lang();
     $title        = get_the_title( $job_id );
     $excerpt      = get_the_excerpt( $job_id );
-    $apply_url    = get_post_meta( $job_id, 'original_rss_link', true );
+    
+    // Prioritize _map_apply_form_url over original_rss_link
+    $apply_form_url = get_post_meta( $job_id, '_map_apply_form_url', true );
+    $apply_url = ! empty( $apply_form_url ) ? $apply_form_url : get_post_meta( $job_id, 'original_rss_link', true );
 
     // Hae infopaketti
     $package_id   = map_resolve_infopackage( $job_id, $current_lang );
@@ -146,6 +149,7 @@ function map_rest_get_job_info( $request ) {
         'id'          => $job_id,
         'title'       => $title,
         'excerpt'     => $excerpt,
+        'description' => $post->post_content,
         'apply_url'   => $apply_url ? $apply_url : '',
         'lang'        => $current_lang,
         'infopackage' => $package_data,

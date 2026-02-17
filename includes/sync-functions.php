@@ -83,6 +83,57 @@ function map_sync_feed() {
         $desc   = $item->get_content();
         $link   = $item->get_link();
 
+        // Parse Laura namespace fields
+        $laura_ns = 'https://tapojarvi.rekrytointi.com/#';
+        
+        $laura_description_raw = $item->get_item_tags($laura_ns, 'description');
+        $laura_description = '';
+        if (!empty($laura_description_raw[0]['data'])) {
+            $laura_description = wp_kses_post($laura_description_raw[0]['data']);
+        }
+        
+        $laura_form_raw = $item->get_item_tags($laura_ns, 'form');
+        $laura_form = '';
+        if (!empty($laura_form_raw[0]['data'])) {
+            $laura_form = esc_url_raw($laura_form_raw[0]['data']);
+        }
+        
+        $laura_enddate_raw = $item->get_item_tags($laura_ns, 'enddate');
+        $laura_enddate = '';
+        if (!empty($laura_enddate_raw[0]['data'])) {
+            $laura_enddate = sanitize_text_field($laura_enddate_raw[0]['data']);
+        }
+        
+        $laura_region_raw = $item->get_item_tags($laura_ns, 'common_job_region');
+        $laura_region = '';
+        if (!empty($laura_region_raw[0]['data'])) {
+            $laura_region = sanitize_text_field($laura_region_raw[0]['data']);
+        }
+        
+        $laura_country_raw = $item->get_item_tags($laura_ns, 'common_job_country');
+        $laura_country = '';
+        if (!empty($laura_country_raw[0]['data'])) {
+            $laura_country = sanitize_text_field($laura_country_raw[0]['data']);
+        }
+        
+        $laura_worktime_raw = $item->get_item_tags($laura_ns, 'common_worktime');
+        $laura_worktime = '';
+        if (!empty($laura_worktime_raw[0]['data'])) {
+            $laura_worktime = sanitize_text_field($laura_worktime_raw[0]['data']);
+        }
+        
+        $laura_type_raw = $item->get_item_tags($laura_ns, 'common_type');
+        $laura_type = '';
+        if (!empty($laura_type_raw[0]['data'])) {
+            $laura_type = sanitize_text_field($laura_type_raw[0]['data']);
+        }
+        
+        $laura_category_raw = $item->get_item_tags($laura_ns, 'common_category');
+        $laura_category = '';
+        if (!empty($laura_category_raw[0]['data'])) {
+            $laura_category = sanitize_text_field($laura_category_raw[0]['data']);
+        }
+
         // Tarkista kielletyt otsikot
         $skip = false;
         foreach ($forbidden_titles as $bad_title) {
@@ -104,32 +155,45 @@ function map_sync_feed() {
             $lang_code = 'fi';
         }
 
-        // (A) Poista valmiit "Hakuaika päättyy:" / "Application ends:"
-        $desc = str_ireplace('Application ends:', '', $desc);
-        $desc = str_ireplace('Hakuaika päättyy:', '', $desc);
-
-        // (A2) Poista myös aloituspäivä (jottei fallback nappaa sitä loppuajaksi)
-        $desc = preg_replace('/Hakuaika alkaa:\s*\d{1,2}\.\d{1,2}\.\d{4}\s+\d{1,2}:\d{2}/iu', '', $desc);
-        $desc = preg_replace('/Application period starts:\s*\d{1,2}\.\d{1,2}\.\d{4}\s+\d{1,2}:\d{2}/iu', '', $desc);
-
-        // 1) Yritä löytää "Hakuaika alkaa: ... - Hakuaika päättyy:" / "Application period starts: ... - Application period ends:"
-        $desc = preg_replace(
-            '/(Application period starts:[\s\S]*?\-\s*Application period ends:)|(Hakuaika alkaa:[\s\S]*?\-\s*Hakuaika päättyy:)/iu',
-            'ENDLABEL:',
-            $desc
-        );
-
-        // Jos löydettiin "ENDLABEL", otetaan sen jälkeiset merkinnät
-        if (preg_match('/ENDLABEL\s*(.+)/i', $desc, $match)) {
-            $endDateTime = trim($match[1]);
+        // Parse end date - prioritize laura:enddate
+        $endDateTime = '';
+        
+        if (!empty($laura_enddate)) {
+            // Laura enddate format: "2026-04-30 23:59:00"
+            // Convert to Finnish format: "dd.mm.yyyy hh:mm"
+            $timestamp = strtotime($laura_enddate);
+            if ($timestamp) {
+                $endDateTime = date('d.m.Y H:i', $timestamp);
+            }
         } else {
-            $endDateTime = '';
-        }
+            // Fallback: parse from description
+            // (A) Poista valmiit "Hakuaika päättyy:" / "Application ends:"
+            $desc = str_ireplace('Application ends:', '', $desc);
+            $desc = str_ireplace('Hakuaika päättyy:', '', $desc);
 
-        // 2) Fallback: jos endDateTime vielä tyhjä, etsi "dd.mm.yyyy hh:mm"
-        if (empty($endDateTime)) {
-            if (preg_match('/(\d{1,2}\.\d{1,2}\.\d{4}\s+\d{1,2}:\d{1,2})/u', $desc, $m2)) {
-                $endDateTime = trim($m2[1]);
+            // (A2) Poista myös aloituspäivä (jottei fallback nappaa sitä loppuajaksi)
+            $desc = preg_replace('/Hakuaika alkaa:\s*\d{1,2}\.\d{1,2}\.\d{4}\s+\d{1,2}:\d{2}/iu', '', $desc);
+            $desc = preg_replace('/Application period starts:\s*\d{1,2}\.\d{1,2}\.\d{4}\s+\d{1,2}:\d{2}/iu', '', $desc);
+
+            // 1) Yritä löytää "Hakuaika alkaa: ... - Hakuaika päättyy:" / "Application period starts: ... - Application period ends:"
+            $desc = preg_replace(
+                '/(Application period starts:[\s\S]*?\-\s*Application period ends:)|(Hakuaika alkaa:[\s\S]*?\-\s*Hakuaika päättyy:)/iu',
+                'ENDLABEL:',
+                $desc
+            );
+
+            // Jos löydettiin "ENDLABEL", otetaan sen jälkeiset merkinnät
+            if (preg_match('/ENDLABEL\s*(.+)/i', $desc, $match)) {
+                $endDateTime = trim($match[1]);
+            } else {
+                $endDateTime = '';
+            }
+
+            // 2) Fallback: jos endDateTime vielä tyhjä, etsi "dd.mm.yyyy hh:mm"
+            if (empty($endDateTime)) {
+                if (preg_match('/(\d{1,2}\.\d{1,2}\.\d{4}\s+\d{1,2}:\d{1,2})/u', $desc, $m2)) {
+                    $endDateTime = trim($m2[1]);
+                }
             }
         }
 
@@ -165,18 +229,53 @@ function map_sync_feed() {
             // ===== Vertailu: Onko otsikko tai excerpt muuttunut? =====
             $old_title   = get_the_title($post_id);
             $old_excerpt = get_post_field('post_excerpt', $post_id);
+            $old_content = get_post_field('post_content', $post_id);
 
             $new_title   = wp_strip_all_tags($title);
             $new_excerpt = wp_strip_all_tags($desc_final);
+            $new_content = $laura_description ? $laura_description : ''; // Ensure string, not null
 
             // Päivitä vain jos on tarvetta
-            if ($old_title !== $new_title || $old_excerpt !== $new_excerpt) {
+            if ($old_title !== $new_title || $old_excerpt !== $new_excerpt || $old_content !== $new_content) {
                 wp_update_post(array(
                     'ID'           => $post_id,
                     'post_title'   => $new_title,
                     'post_excerpt' => $new_excerpt,
+                    'post_content' => $new_content,
                 ));
                 $updated[] = $post_id;
+            }
+
+            // Update meta fields (always update to ensure they're in sync, delete if empty)
+            if (!empty($laura_form)) {
+                update_post_meta($post_id, '_map_apply_form_url', $laura_form);
+            } else {
+                delete_post_meta($post_id, '_map_apply_form_url');
+            }
+            if (!empty($laura_region)) {
+                update_post_meta($post_id, '_map_job_region', $laura_region);
+            } else {
+                delete_post_meta($post_id, '_map_job_region');
+            }
+            if (!empty($laura_country)) {
+                update_post_meta($post_id, '_map_job_country', $laura_country);
+            } else {
+                delete_post_meta($post_id, '_map_job_country');
+            }
+            if (!empty($laura_worktime)) {
+                update_post_meta($post_id, '_map_job_worktime', $laura_worktime);
+            } else {
+                delete_post_meta($post_id, '_map_job_worktime');
+            }
+            if (!empty($laura_type)) {
+                update_post_meta($post_id, '_map_job_type', $laura_type);
+            } else {
+                delete_post_meta($post_id, '_map_job_type');
+            }
+            if (!empty($laura_category)) {
+                update_post_meta($post_id, '_map_job_category', $laura_category);
+            } else {
+                delete_post_meta($post_id, '_map_job_category');
             }
 
             // EI enää muutospohjaisia lokimerkintöjä (title/excerpt) — pidetään loki siistinä
@@ -188,10 +287,31 @@ function map_sync_feed() {
                 'post_status'  => 'publish',
                 'post_title'   => wp_strip_all_tags($title),
                 'post_excerpt' => wp_strip_all_tags($desc_final),
-                'post_content' => '',
+                'post_content' => $laura_description ? $laura_description : '', // Ensure string, not null
             ));
             if (!is_wp_error($new_post_id)) {
                 update_post_meta($new_post_id, 'original_rss_link', $link);
+                
+                // Save Laura namespace meta fields
+                if (!empty($laura_form)) {
+                    update_post_meta($new_post_id, '_map_apply_form_url', $laura_form);
+                }
+                if (!empty($laura_region)) {
+                    update_post_meta($new_post_id, '_map_job_region', $laura_region);
+                }
+                if (!empty($laura_country)) {
+                    update_post_meta($new_post_id, '_map_job_country', $laura_country);
+                }
+                if (!empty($laura_worktime)) {
+                    update_post_meta($new_post_id, '_map_job_worktime', $laura_worktime);
+                }
+                if (!empty($laura_type)) {
+                    update_post_meta($new_post_id, '_map_job_type', $laura_type);
+                }
+                if (!empty($laura_category)) {
+                    update_post_meta($new_post_id, '_map_job_category', $laura_category);
+                }
+                
                 $added[] = $new_post_id;
             }
         }

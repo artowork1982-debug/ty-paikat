@@ -98,15 +98,13 @@ function map_jobs_list_shortcode($atts) {
 
         $output .= '<li>';
         if ($link) {
+            // Add data-job-id to ALL links, badge only if infopackage exists
+            $output .= '<a href="' . esc_url($link) . '" data-job-id="' . esc_attr($job_id) . '">';
+            $output .= esc_html($title);
             if ($has_infopackage) {
-                // Infopaketti löytyy: lisää data-job-id ja badge
-                $output .= '<a href="' . esc_url($link) . '" data-job-id="' . esc_attr($job_id) . '">' . esc_html($title);
                 $output .= '<span class="map-info-badge">' . esc_html( map_i18n( 'modal.info_badge', $current_lang ) ) . '</span>';
-                $output .= '</a>';
-            } else {
-                // Ei infopakettia: normaali linkki
-                $output .= '<a href="' . esc_url($link) . '" target="_blank" rel="noopener">' . esc_html($title) . '</a>';
             }
+            $output .= '</a>';
         } else {
             // Jos linkkiä ei ole, näytetään pelkkä otsikko
             $output .= esc_html($title);

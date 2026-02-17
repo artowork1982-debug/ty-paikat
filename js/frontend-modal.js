@@ -210,6 +210,14 @@
 
         // Tab-sisältö: Yleistä
         html += `<div class="map-tab-content" data-tab-content="general">`;
+        
+        // Työn kuvaus (laura:description)
+        // Note: Server sanitizes with wp_kses_post (WordPress standard for post content)
+        // This is the same sanitization used for all WordPress post content and is safe to render as HTML
+        if (data.description) {
+            html += '<div class="map-modal__job-description">' + data.description + '</div>';
+        }
+        
         if (pkg) {
             // Highlights
             if (pkg.highlights && pkg.highlights.length > 0) {
