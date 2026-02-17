@@ -233,7 +233,7 @@ function map_sync_feed() {
 
             $new_title   = wp_strip_all_tags($title);
             $new_excerpt = wp_strip_all_tags($desc_final);
-            $new_content = $laura_description; // Already wp_kses_post sanitized
+            $new_content = !empty($laura_description) ? $laura_description : ''; // Already wp_kses_post sanitized
 
             // Päivitä vain jos on tarvetta
             if ($old_title !== $new_title || $old_excerpt !== $new_excerpt || $old_content !== $new_content) {
@@ -246,24 +246,36 @@ function map_sync_feed() {
                 $updated[] = $post_id;
             }
 
-            // Update meta fields (always update to ensure they're in sync)
+            // Update meta fields (always update to ensure they're in sync, delete if empty)
             if (!empty($laura_form)) {
                 update_post_meta($post_id, '_map_apply_form_url', $laura_form);
+            } else {
+                delete_post_meta($post_id, '_map_apply_form_url');
             }
             if (!empty($laura_region)) {
                 update_post_meta($post_id, '_map_job_region', $laura_region);
+            } else {
+                delete_post_meta($post_id, '_map_job_region');
             }
             if (!empty($laura_country)) {
                 update_post_meta($post_id, '_map_job_country', $laura_country);
+            } else {
+                delete_post_meta($post_id, '_map_job_country');
             }
             if (!empty($laura_worktime)) {
                 update_post_meta($post_id, '_map_job_worktime', $laura_worktime);
+            } else {
+                delete_post_meta($post_id, '_map_job_worktime');
             }
             if (!empty($laura_type)) {
                 update_post_meta($post_id, '_map_job_type', $laura_type);
+            } else {
+                delete_post_meta($post_id, '_map_job_type');
             }
             if (!empty($laura_category)) {
                 update_post_meta($post_id, '_map_job_category', $laura_category);
+            } else {
+                delete_post_meta($post_id, '_map_job_category');
             }
 
             // EI enää muutospohjaisia lokimerkintöjä (title/excerpt) — pidetään loki siistinä
@@ -275,7 +287,7 @@ function map_sync_feed() {
                 'post_status'  => 'publish',
                 'post_title'   => wp_strip_all_tags($title),
                 'post_excerpt' => wp_strip_all_tags($desc_final),
-                'post_content' => $laura_description, // Already wp_kses_post sanitized
+                'post_content' => !empty($laura_description) ? $laura_description : '', // Already wp_kses_post sanitized
             ));
             if (!is_wp_error($new_post_id)) {
                 update_post_meta($new_post_id, 'original_rss_link', $link);
