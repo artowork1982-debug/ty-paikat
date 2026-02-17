@@ -1,6 +1,7 @@
-/* Modal Infopackage Styles */
+/* Modal Infopackage Styles - Tab-based Redesign */
+/* Responsive, Mobile-friendly, with Video and Gallery support */
 
-/* Overlay */
+/* === Overlay === */
 .map-modal-overlay {
     position: fixed;
     inset: 0;
@@ -20,10 +21,10 @@
     visibility: visible;
 }
 
-/* Modal Panel */
+/* === Modal Panel === */
 .map-modal-panel {
     width: 100%;
-    max-width: 540px;
+    max-width: 600px;
     background: #ffffff;
     box-shadow: -2px 0 16px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
@@ -39,7 +40,7 @@
     padding: 24px;
 }
 
-/* Top Bar */
+/* === Top Bar === */
 .map-modal__topbar {
     display: flex;
     justify-content: space-between;
@@ -48,40 +49,43 @@
 }
 
 .map-modal__close {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border: none;
     background: #f3f4f6;
     border-radius: 50%;
-    font-size: 24px;
+    font-size: 28px;
     line-height: 1;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #6b7280;
 }
 
 .map-modal__close:hover {
     background: #e5e7eb;
     transform: scale(1.1);
+    color: #111827;
 }
 
-/* Language Switcher */
+/* === Language Switcher === */
 .map-modal__lang-switcher {
     display: flex;
-    gap: 4px;
+    gap: 6px;
 }
 
 .map-lang-btn {
-    padding: 4px 10px;
+    padding: 6px 12px;
     border: 1px solid #d1d5db;
-    border-radius: 4px;
+    border-radius: 6px;
     background: #fff;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    color: #6b7280;
 }
 
 .map-lang-btn.is-active {
@@ -92,9 +96,10 @@
 
 .map-lang-btn:hover:not(.is-active) {
     background: #f3f4f6;
+    border-color: #9ca3af;
 }
 
-/* Title */
+/* === Title & Excerpt === */
 .map-modal__title {
     font-size: 28px;
     font-weight: 700;
@@ -103,43 +108,100 @@
     color: #111827;
 }
 
-/* Excerpt */
 .map-modal__excerpt {
     color: #6b7280;
-    font-size: 14px;
+    font-size: 15px;
     margin-bottom: 20px;
     padding-bottom: 20px;
     border-bottom: 1px solid #e5e7eb;
 }
 
-/* Intro */
-.map-modal__intro {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #374151;
+/* === Tabs === */
+.map-modal__tabs {
+    display: flex;
+    gap: 8px;
     margin-bottom: 24px;
+    border-bottom: 2px solid #e5e7eb;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Highlights */
+.map-tab-btn {
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #6b7280;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.map-tab-btn:hover {
+    color: #3b82f6;
+}
+
+.map-tab-btn.is-active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+/* === Tab Content === */
+.map-tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Highlights === */
 .map-modal__highlights {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 10px;
     margin-bottom: 24px;
 }
 
 .map-highlight-pill {
     display: inline-block;
-    padding: 8px 16px;
+    padding: 10px 18px;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: #ffffff;
-    border-radius: 20px;
+    border-radius: 24px;
     font-size: 14px;
     font-weight: 500;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+    transition: transform 0.2s;
 }
 
-/* Section Headings */
+.map-highlight-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+/* === Intro Text === */
+.map-modal__intro {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #374151;
+    margin-bottom: 24px;
+    white-space: pre-wrap;
+}
+
+/* === Section Headings === */
 .map-modal__section-heading {
     font-size: 20px;
     font-weight: 600;
@@ -147,20 +209,192 @@
     color: #111827;
 }
 
-/* Questions */
+/* === Contact === */
+.map-modal__contact {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.map-modal__contact p {
+    margin: 10px 0;
+    color: #374151;
+    font-size: 15px;
+}
+
+.map-modal__contact a {
+    color: #3b82f6;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.map-modal__contact a:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+/* === Video Wrapper (16:9 responsive) === */
+.map-modal__video-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    margin-bottom: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.map-modal__video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* === Image Gallery === */
+.map-modal__gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.map-gallery-item {
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.map-gallery-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.map-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* === Lightbox === */
+.map-lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.map-lightbox-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.map-lightbox__content {
+    max-width: 90vw;
+    max-height: 90vh;
+    position: relative;
+}
+
+.map-lightbox__image {
+    max-width: 100%;
+    max-height: 90vh;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.map-lightbox__counter {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.map-lightbox__close,
+.map-lightbox__prev,
+.map-lightbox__next {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    color: #111827;
+    font-size: 32px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-weight: 300;
+}
+
+.map-lightbox__close {
+    top: 20px;
+    right: 20px;
+}
+
+.map-lightbox__prev {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.map-lightbox__next {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.map-lightbox__close:hover,
+.map-lightbox__prev:hover,
+.map-lightbox__next:hover {
+    background: #fff;
+    transform: scale(1.1);
+}
+
+.map-lightbox__prev:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.map-lightbox__next:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* === Questions === */
 .map-modal__questions {
     margin-bottom: 24px;
 }
 
 .map-question {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .map-question__label {
     display: block;
     font-weight: 500;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: #374151;
+    font-size: 15px;
 }
 
 .map-required {
@@ -171,13 +405,13 @@
 .map-question__textarea {
     width: 100%;
     min-height: 100px;
-    padding: 12px;
+    padding: 12px 14px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-family: inherit;
     font-size: 14px;
     resize: vertical;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .map-question__textarea:focus {
@@ -189,12 +423,12 @@
 .map-question__input,
 .map-question__select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-family: inherit;
     font-size: 14px;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .map-question__input:focus,
@@ -204,22 +438,23 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Yes/No Pills */
+/* === Yes/No Pills === */
 .map-question__pills {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
 .map-pill-button {
     flex: 1;
-    padding: 12px 24px;
+    padding: 14px 24px;
     border: 2px solid #d1d5db;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #ffffff;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    min-height: 48px;
 }
 
 .map-pill-button:hover {
@@ -233,10 +468,10 @@
     color: #ffffff;
 }
 
-/* Scale */
+/* === Scale === */
 .map-question__scale {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
 .map-scale-option {
@@ -251,11 +486,16 @@
 
 .map-scale-option span {
     display: block;
-    padding: 12px;
+    padding: 14px;
     border: 2px solid #d1d5db;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: 500;
     transition: all 0.2s;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
 }
 
 .map-scale-option:hover span {
@@ -269,66 +509,56 @@
     color: #ffffff;
 }
 
-/* Contact */
-.map-modal__contact {
-    background: #f9fafb;
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-}
-
-.map-modal__contact p {
-    margin: 8px 0;
-    color: #374151;
-}
-
-.map-modal__contact a {
-    color: #3b82f6;
-    text-decoration: none;
-}
-
-.map-modal__contact a:hover {
-    text-decoration: underline;
-}
-
-/* CTA Button */
+/* === CTA Button (Sticky on mobile) === */
 .map-modal__cta {
     margin-top: 32px;
     padding-top: 24px;
     border-top: 1px solid #e5e7eb;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding-bottom: 8px;
 }
 
 .map-cta-button {
-    display: inline-block;
+    display: block;
     width: 100%;
     padding: 16px 24px;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: #ffffff;
     text-align: center;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .map-cta-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
     color: #ffffff;
     text-decoration: none;
 }
 
-/* Loading Spinner */
+.map-cta-button:active {
+    transform: translateY(0);
+}
+
+/* === Loading Spinner === */
 .map-modal__loading {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 20px;
+    padding: 80px 20px;
 }
 
 .map-spinner {
@@ -347,41 +577,58 @@
 }
 
 .map-modal__loading p {
-    margin-top: 16px;
+    margin-top: 20px;
     color: #6b7280;
-    font-size: 14px;
+    font-size: 15px;
 }
 
-/* Error */
+/* === Error === */
 .map-modal__error {
-    padding: 60px 20px;
+    padding: 80px 20px;
     text-align: center;
 }
 
 .map-modal__error p {
     color: #ef4444;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    font-size: 16px;
 }
 
 .map-modal__retry {
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: #3b82f6;
     color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 500;
+    transition: background 0.2s;
 }
 
 .map-modal__retry:hover {
     background: #2563eb;
 }
 
-/* Mobile Responsive */
+/* === Info Badge for Job List === */
+.map-info-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 10px;
+    background: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #3b82f6;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+/* === Mobile Responsive === */
 @media (max-width: 600px) {
     .map-modal-panel {
         max-width: 100%;
+        height: 100%;
     }
 
     .map-modal__content {
@@ -392,25 +639,82 @@
         font-size: 24px;
     }
 
+    .map-modal__tabs {
+        gap: 4px;
+        padding-bottom: 0;
+    }
+
+    .map-tab-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .map-modal__highlights {
+        gap: 8px;
+    }
+
+    .map-highlight-pill {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .map-modal__gallery {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+    }
+
     .map-question__scale {
         flex-wrap: wrap;
     }
 
     .map-scale-option {
         flex: 0 0 calc(20% - 8px);
+        min-width: 48px;
+    }
+
+    .map-question__pills {
+        flex-direction: column;
+    }
+
+    .map-cta-button {
+        font-size: 16px;
+        padding: 14px 20px;
+    }
+
+    .map-modal__cta {
+        position: sticky;
+        bottom: 0;
+        margin-top: 24px;
+        padding-top: 16px;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .map-lightbox__prev,
+    .map-lightbox__next {
+        width: 44px;
+        height: 44px;
+        font-size: 28px;
+    }
+
+    .map-lightbox__prev {
+        left: 10px;
+    }
+
+    .map-lightbox__next {
+        right: 10px;
+    }
+
+    .map-lightbox__close {
+        top: 10px;
+        right: 10px;
+        width: 44px;
+        height: 44px;
     }
 }
 
-/* Info Badge for Job List */
-.map-info-badge {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 2px 8px;
-    background: #eff6ff;
-    color: #3b82f6;
-    border: 1px solid #3b82f6;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    vertical-align: middle;
+/* === Tablet === */
+@media (min-width: 601px) and (max-width: 900px) {
+    .map-modal-panel {
+        max-width: 500px;
+    }
 }
