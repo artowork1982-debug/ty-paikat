@@ -63,6 +63,16 @@ function map_add_infopackage_meta_boxes() {
         'high'
     );
 
+    // Media (Video ja Kuvagalleria)
+    add_meta_box(
+        'map_infopackage_media',
+        __( 'Media (Video ja Kuvagalleria)', 'my-aggregator-plugin' ),
+        'map_render_infopackage_media_meta_box',
+        'map_infopackage',
+        'normal',
+        'high'
+    );
+
     // Kysymyspatteristo
     add_meta_box(
         'map_infopackage_questions',
@@ -192,6 +202,101 @@ function map_render_infopackage_content_meta_box( $post ) {
         // Remove highlight
         $(document).on('click', '.map-remove-highlight', function() {
             $(this).closest('.map-highlight-row').remove();
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Renderöi media (video ja galleria) meta box
+ */
+function map_render_infopackage_media_meta_box( $post ) {
+    $video_url = get_post_meta( $post->ID, '_map_info_video_url', true );
+    $gallery   = get_post_meta( $post->ID, '_map_info_gallery', true );
+    
+    if ( ! is_array( $gallery ) ) {
+        $gallery = array();
+    }
+    
+    ?>
+    <div style="margin-bottom:20px;">
+        <h4><?php _e( 'Video', 'my-aggregator-plugin' ); ?></h4>
+        <p>
+            <label><?php _e( 'YouTube tai Vimeo URL', 'my-aggregator-plugin' ); ?></label><br>
+            <input type="url" name="map_info_video_url" id="map_info_video_url" value="<?php echo esc_attr( $video_url ); ?>" style="width:100%;" placeholder="https://www.youtube.com/watch?v=xxxxx tai https://vimeo.com/xxxxx" />
+        </p>
+        <p class="description">
+            <?php _e( 'Syötä YouTube tai Vimeo videon URL. URL parsitaan automaattisesti embed-muotoon.', 'my-aggregator-plugin' ); ?>
+        </p>
+    </div>
+
+    <hr style="margin:20px 0;" />
+
+    <div>
+        <h4><?php _e( 'Kuvagalleria', 'my-aggregator-plugin' ); ?></h4>
+        <div id="map-gallery-container" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+            <?php
+            foreach ( $gallery as $attachment_id ) {
+                $image_url = wp_get_attachment_image_url( $attachment_id, 'thumbnail' );
+                if ( $image_url ) {
+                    ?>
+                    <div class="map-gallery-item" data-id="<?php echo esc_attr( $attachment_id ); ?>" style="position:relative; width:100px; height:100px;">
+                        <img src="<?php echo esc_url( $image_url ); ?>" style="width:100%; height:100%; object-fit:cover; border-radius:4px;" />
+                        <button type="button" class="map-remove-gallery-item" style="position:absolute; top:2px; right:2px; width:24px; height:24px; padding:0; background:#ef4444; color:#fff; border:none; border-radius:50%; cursor:pointer; font-size:16px; line-height:1;">&times;</button>
+                        <input type="hidden" name="map_info_gallery[]" value="<?php echo esc_attr( $attachment_id ); ?>" />
+                    </div>
+                    <?php
+                }
+            }
+            ?>
+        </div>
+        <button type="button" id="map-add-gallery-images" class="button">+ Lisää kuvia</button>
+        <p class="description">
+            <?php _e( 'Kuvat näytetään modalissa galleria-näkymässä.', 'my-aggregator-plugin' ); ?>
+        </p>
+    </div>
+
+    <script>
+    jQuery(document).ready(function($) {
+        // WordPress Media Uploader for gallery
+        var mapMediaUploader;
+        
+        $('#map-add-gallery-images').on('click', function(e) {
+            e.preventDefault();
+            
+            if (mapMediaUploader) {
+                mapMediaUploader.open();
+                return;
+            }
+            
+            mapMediaUploader = wp.media({
+                title: '<?php _e( 'Valitse kuvat galleriaan', 'my-aggregator-plugin' ); ?>',
+                button: {
+                    text: '<?php _e( 'Lisää galleriaan', 'my-aggregator-plugin' ); ?>'
+                },
+                multiple: true
+            });
+            
+            mapMediaUploader.on('select', function() {
+                var attachments = mapMediaUploader.state().get('selection').toJSON();
+                
+                attachments.forEach(function(attachment) {
+                    var html = '<div class="map-gallery-item" data-id="' + attachment.id + '" style="position:relative; width:100px; height:100px;">' +
+                        '<img src="' + attachment.sizes.thumbnail.url + '" style="width:100%; height:100%; object-fit:cover; border-radius:4px;" />' +
+                        '<button type="button" class="map-remove-gallery-item" style="position:absolute; top:2px; right:2px; width:24px; height:24px; padding:0; background:#ef4444; color:#fff; border:none; border-radius:50%; cursor:pointer; font-size:16px; line-height:1;">&times;</button>' +
+                        '<input type="hidden" name="map_info_gallery[]" value="' + attachment.id + '" />' +
+                        '</div>';
+                    $('#map-gallery-container').append(html);
+                });
+            });
+            
+            mapMediaUploader.open();
+        });
+        
+        // Remove gallery item
+        $(document).on('click', '.map-remove-gallery-item', function() {
+            $(this).closest('.map-gallery-item').remove();
         });
     });
     </script>
@@ -378,6 +483,20 @@ function map_save_infopackage_meta( $post_id ) {
         update_post_meta( $post_id, '_map_info_contact_phone', sanitize_text_field( $_POST['map_info_contact_phone'] ) );
     }
 
+    // Tallenna video URL
+    if ( isset( $_POST['map_info_video_url'] ) ) {
+        update_post_meta( $post_id, '_map_info_video_url', esc_url_raw( $_POST['map_info_video_url'] ) );
+    }
+
+    // Tallenna galleria
+    if ( isset( $_POST['map_info_gallery'] ) && is_array( $_POST['map_info_gallery'] ) ) {
+        $gallery = array_map( 'absint', $_POST['map_info_gallery'] );
+        $gallery = array_filter( $gallery ); // Poista tyhjät
+        update_post_meta( $post_id, '_map_info_gallery', $gallery );
+    } else {
+        delete_post_meta( $post_id, '_map_info_gallery' );
+    }
+
     // Tallenna kysymykset
     if ( isset( $_POST['map_info_questions'] ) && is_array( $_POST['map_info_questions'] ) ) {
         $questions = array();
@@ -404,5 +523,8 @@ function map_save_infopackage_meta( $post_id ) {
     if ( isset( $_POST['map_info_auto_keywords'] ) ) {
         update_post_meta( $post_id, '_map_info_auto_keywords', sanitize_text_field( $_POST['map_info_auto_keywords'] ) );
     }
+
+    // Päivitä HTML-välimuistin cache bump
+    update_option( 'my_agg_cache_bump', time() );
 }
 add_action( 'save_post_map_infopackage', 'map_save_infopackage_meta' );

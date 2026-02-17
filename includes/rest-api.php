@@ -72,6 +72,24 @@ function map_rest_get_job_info( $request ) {
             $contact_name  = get_post_meta( $package_id, '_map_info_contact_name', true );
             $contact_email = get_post_meta( $package_id, '_map_info_contact_email', true );
             $contact_phone = get_post_meta( $package_id, '_map_info_contact_phone', true );
+            $video_url     = get_post_meta( $package_id, '_map_info_video_url', true );
+            $gallery_ids   = get_post_meta( $package_id, '_map_info_gallery', true );
+
+            // Rakenna galleria URL-taulukko
+            $gallery = array();
+            if ( is_array( $gallery_ids ) ) {
+                foreach ( $gallery_ids as $attachment_id ) {
+                    $image_url = wp_get_attachment_image_url( $attachment_id, 'large' );
+                    $thumb_url = wp_get_attachment_image_url( $attachment_id, 'medium' );
+                    if ( $image_url ) {
+                        $gallery[] = array(
+                            'id'    => $attachment_id,
+                            'url'   => $image_url,
+                            'thumb' => $thumb_url ? $thumb_url : $image_url,
+                        );
+                    }
+                }
+            }
 
             // Tarkista saatavilla olevat kieliversiot
             $available_langs = map_get_available_languages();
@@ -105,6 +123,8 @@ function map_rest_get_job_info( $request ) {
                     'email' => $contact_email ? $contact_email : '',
                     'phone' => $contact_phone ? $contact_phone : '',
                 ),
+                'video_url'           => $video_url ? $video_url : '',
+                'gallery'             => $gallery,
                 'available_languages' => $available_languages_map,
             );
         }

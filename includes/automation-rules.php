@@ -127,6 +127,15 @@ function map_resolve_infopackage( $job_post_id, $lang = null ) {
         return map_get_translated_package_id( $best_package_id, $lang );
     }
 
+    // Fallback: jos vain yksi infopaketti olemassa, käytetään sitä
+    if ( $packages_query->found_posts === 1 ) {
+        $packages_query->rewind_posts();
+        $packages_query->the_post();
+        $fallback_id = get_the_ID();
+        wp_reset_postdata();
+        return map_get_translated_package_id( $fallback_id, $lang );
+    }
+
     return null;
 }
 
@@ -246,6 +255,9 @@ function map_save_job_infopackage_meta( $post_id ) {
         } else {
             update_post_meta( $post_id, '_map_linked_infopackage', absint( $package_id ) );
         }
+
+        // Päivitä HTML-välimuistin cache bump
+        update_option( 'my_agg_cache_bump', time() );
     }
 }
 add_action( 'save_post_avoimet_tyopaikat', 'map_save_job_infopackage_meta' );
