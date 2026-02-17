@@ -461,26 +461,27 @@
 
     /**
      * Parsii video URL:n embed-muotoon
+     * Validates and converts YouTube/Vimeo URLs to embed format
      */
     function parseVideoUrl(url) {
         if (!url) return null;
 
         url = url.trim();
 
-        // YouTube
-        let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        // YouTube - validate and extract video ID
+        let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
         if (match) {
             return `https://www.youtube.com/embed/${match[1]}`;
         }
 
-        // Vimeo
+        // Vimeo - validate and extract video ID
         match = url.match(/vimeo\.com\/(\d+)/);
         if (match) {
             return `https://player.vimeo.com/video/${match[1]}`;
         }
 
-        // Jos jo embed-muodossa, käytä sellaisenaan
-        if (url.includes('youtube.com/embed/') || url.includes('player.vimeo.com/video/')) {
+        // Validate if already in embed format
+        if (url.match(/^https:\/\/(www\.youtube\.com\/embed\/[a-zA-Z0-9_-]{11}|player\.vimeo\.com\/video\/\d+)$/)) {
             return url;
         }
 

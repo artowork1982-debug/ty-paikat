@@ -271,9 +271,9 @@ function map_render_infopackage_media_meta_box( $post ) {
             }
             
             mapMediaUploader = wp.media({
-                title: '<?php _e( 'Valitse kuvat galleriaan', 'my-aggregator-plugin' ); ?>',
+                title: '<?php echo esc_js( __( 'Valitse kuvat galleriaan', 'my-aggregator-plugin' ) ); ?>',
                 button: {
-                    text: '<?php _e( 'Lisää galleriaan', 'my-aggregator-plugin' ); ?>'
+                    text: '<?php echo esc_js( __( 'Lisää galleriaan', 'my-aggregator-plugin' ) ); ?>'
                 },
                 multiple: true
             });

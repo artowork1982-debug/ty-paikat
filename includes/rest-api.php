@@ -79,6 +79,17 @@ function map_rest_get_job_info( $request ) {
             $gallery = array();
             if ( is_array( $gallery_ids ) ) {
                 foreach ( $gallery_ids as $attachment_id ) {
+                    // Validate attachment ID
+                    $attachment_id = absint( $attachment_id );
+                    if ( ! $attachment_id ) {
+                        continue;
+                    }
+                    
+                    // Verify attachment exists and is an image
+                    if ( ! wp_attachment_is_image( $attachment_id ) ) {
+                        continue;
+                    }
+                    
                     $image_url = wp_get_attachment_image_url( $attachment_id, 'large' );
                     $thumb_url = wp_get_attachment_image_url( $attachment_id, 'medium' );
                     if ( $image_url ) {
