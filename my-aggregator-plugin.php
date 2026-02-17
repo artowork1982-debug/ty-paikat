@@ -2,7 +2,7 @@
 /**
  * Plugin Name: My Aggregator Plugin
  * Description: RSS-syötteen synkronointi ja työpaikkojen hallinta.
- * Version: 1.3.1
+ * Version: 2.0.0
  * Author: Arto Huhta
  * Text Domain: my-aggregator-plugin
  */
@@ -11,9 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Ladataan muut tiedostot
+// Ladataan muut tiedostot (i18n-strings ensin!)
+require_once plugin_dir_path( __FILE__ ) . 'includes/i18n-strings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/cpt-and-cron.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/cpt-infopackage.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/automation-rules.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/rest-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/sync-functions.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 
@@ -145,7 +149,9 @@ function map_prevent_heavy_shortcodes_in_builder( $return, $tag, $atts, $m ) {
 
     // Builder: näytä kevyt esikatselu
     if ( function_exists( 'map_is_builder_request' ) && map_is_builder_request() ) {
-        return '<div class="my-job-list my-job-list--placeholder" style="opacity:.7;">Avoimet työpaikat – esikatselu. Julkaisussa listaus näkyy normaalisti.</div>';
+        $current_lang = function_exists( 'map_get_current_lang' ) ? map_get_current_lang() : 'fi';
+        $placeholder_text = function_exists( 'map_i18n' ) ? map_i18n( 'builder.placeholder', $current_lang ) : 'Avoimet työpaikat – esikatselu. Julkaisussa listaus näkyy normaalisti.';
+        return '<div class="my-job-list my-job-list--placeholder" style="opacity:.7;">' . esc_html( $placeholder_text ) . '</div>';
     }
 
     // Julkinen puoli: kokeile välimuistia ennen varsinaista renderöintiä
