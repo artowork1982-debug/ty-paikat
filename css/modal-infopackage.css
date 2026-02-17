@@ -717,3 +717,48 @@
         max-width: 500px;
     }
 }
+
+/* === Question Feedback Banner === */
+.map-question__feedback {
+    margin-top: 12px;
+}
+
+.map-feedback-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #f59e0b;
+    border-radius: 12px;
+    animation: fadeIn 0.3s ease;
+}
+
+.map-feedback-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.map-feedback-text {
+    flex: 1;
+}
+
+.map-feedback-text strong {
+    display: block;
+    color: #92400e;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.map-feedback-text p {
+    color: #78350f;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
